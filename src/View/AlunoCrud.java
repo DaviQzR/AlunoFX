@@ -5,12 +5,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
 import Model.Aluno;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -42,9 +42,6 @@ public class AlunoCrud extends Application {
         Button btnAdicionar = new Button("Adicionar");
         Button btnPesquisar = new Button("Pesquisar");
 
-        TextArea resultadoPesquisa = new TextArea();
-        resultadoPesquisa.setEditable(false);
-
         lblNome.setLayoutX(20);
         lblNome.setLayoutY(20);
         txtNome.setLayoutX(120);
@@ -65,11 +62,6 @@ public class AlunoCrud extends Application {
 
         btnPesquisar.setLayoutX(120);
         btnPesquisar.setLayoutY(140);
-
-        resultadoPesquisa.setLayoutX(20);
-        resultadoPesquisa.setLayoutY(180);
-        resultadoPesquisa.setPrefWidth(300);
-        resultadoPesquisa.setPrefHeight(200);
 
         btnAdicionar.setOnAction(event -> {
             String nome = txtNome.getText();
@@ -92,28 +84,32 @@ public class AlunoCrud extends Application {
                     txtRa.clear();
                     txtNascimento.clear();
                 } catch (DateTimeParseException ex) {
-                    resultadoPesquisa.setText("Formato de data inválido. Use o formato ddMMyyyy ou dd/MM/yyyy.");
+                    // Tratamento do formato de data inválido
+                    System.out.println("Formato de data inválido. Use o formato ddMMyyyy ou dd/MM/yyyy.");
                 }
             }
         });
 
         btnPesquisar.setOnAction(event -> {
             String nome = txtNome.getText();
-            resultadoPesquisa.clear();
 
             for (Aluno aluno : alunos) {
                 if (aluno.getNome().equalsIgnoreCase(nome)) {
-                    resultadoPesquisa.appendText("ID: " + aluno.getId() + "\n");
-                    resultadoPesquisa.appendText("RA: " + aluno.getRa() + "\n");
-                    resultadoPesquisa.appendText("Nome: " + aluno.getNome() + "\n");
-                    resultadoPesquisa.appendText("Nascimento: " + aluno.getNascimento().format(formatter) + "\n");
+                    // Exibir os resultados nos campos TextField
+                    txtRa.setText(Integer.toString(aluno.getRa()));
+                    txtNascimento.setText(aluno.getNascimento().format(formatter));
+                    return; // Encerra após encontrar o primeiro aluno com o nome correspondente
                 }
             }
+
+            // Limpar os campos se nenhum aluno for encontrado
+            txtRa.clear();
+            txtNascimento.clear();
         });
 
-        root.getChildren().addAll(lblNome, txtNome, lblRa, txtRa, lblNascimento, txtNascimento, btnAdicionar, btnPesquisar, resultadoPesquisa);
+        root.getChildren().addAll(lblNome, txtNome, lblRa, txtRa, lblNascimento, txtNascimento, btnAdicionar, btnPesquisar);
 
-        Scene scene = new Scene(root, 400, 400);
+        Scene scene = new Scene(root, 400, 200);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
